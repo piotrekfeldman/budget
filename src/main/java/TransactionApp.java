@@ -4,6 +4,14 @@ import java.util.Scanner;
 public class TransactionApp {
 
     private static final TransactionDAO DAO = new TransactionDAO();
+    private static final String ADD_TRANSACTION = "1";
+    private static final String MODIFY_TRANSACTION = "2";
+    private static final String DELETE_TRANSACTION = "3";
+    private static final String DISPLAY_INCOMES = "4";
+    private static final String DISPLAY_EXPENSES = "5";
+    private static final String EXIT = "0";
+
+
     private Scanner scanner;
 
     public TransactionApp() {
@@ -15,22 +23,22 @@ public class TransactionApp {
         while (true) {
             printMenu();
             switch (scanner.nextLine()) {
-                case "1":
+                case ADD_TRANSACTION:
                     addNewTransaction();
                     break;
-                case "2":
+                case MODIFY_TRANSACTION:
                     modifyTransaction();
                     break;
-                case "3":
+                case DELETE_TRANSACTION:
                     deleteTransaction();
                     break;
-                case "4":
+                case DISPLAY_INCOMES:
                     displaySumAmount(TransactionType.INCOME);
                     break;
-                case "5":
+                case DISPLAY_EXPENSES:
                     displaySumAmount(TransactionType.EXPENSE);
                     break;
-                case "0":
+                case EXIT:
                     DAO.close();
                     return;
                 default:
@@ -58,7 +66,10 @@ public class TransactionApp {
     }
 
     private void addNewTransaction() {
-        DAO.save(transactionCreator());
+
+        Transaction transaction = DAO.save(transactionCreator());
+        System.out.printf("Obiekt został zapisany z id %s \n", transaction.getId());
+
     }
 
     private void displaySumAmount(TransactionType transactionType) {
@@ -69,28 +80,30 @@ public class TransactionApp {
 
 
     private Transaction transactionCreator() {
-        TransactionType type1 = null;
-        System.out.println("Podaj typ transakcji");
-        System.out.println("1. Przychód");
-        System.out.println("2. Wydatek");
-        String option = scanner.nextLine();
-        while (true) {
+        boolean doTheLoop = true;
+        TransactionType type = null;
+
+        while (doTheLoop) {
+            System.out.println("Podaj typ transakcji");
+            System.out.println("1. Przychód");
+            System.out.println("2. Wydatek");
+            String option = scanner.nextLine();
             if (option.equals("1")) {
-                type1 = TransactionType.INCOME;
+                type = TransactionType.INCOME;
+                doTheLoop = false;
             } else if (option.equals("2")) {
-                type1 = TransactionType.EXPENSE;
+                type = TransactionType.EXPENSE;
+                doTheLoop = false;
             } else {
                 System.out.println("Podana wartość jest nieprawidłowa. Spróbuj ponownie");
             }
-
-            System.out.println("Podaj opis transakcji");
-            String description = scanner.nextLine();
-            System.out.println("Podaj kwotę transakcji");
-            double amount = scanner.nextDouble();
-            scanner.nextLine();
-            return new Transaction(type1, description, amount, LocalDate.now());
-
         }
+        System.out.println("Podaj opis transakcji");
+        String description = scanner.nextLine();
+        System.out.println("Podaj kwotę transakcji");
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
+        return new Transaction(type, description, amount, LocalDate.now());
     }
 
     private void printMenu() {

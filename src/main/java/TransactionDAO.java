@@ -57,7 +57,7 @@ public class TransactionDAO {
 
     }
 
-    void save(Transaction transaction) {
+    Transaction save(Transaction transaction) {
 
         final String sql = String.format("INSERT INTO transaction(type, description, amount, date) VALUES ('%s','%s','%s','%s')",
                 transaction.getType(), transaction.getDescription(), transaction.getAmount(), transaction.getDate().toString());
@@ -75,6 +75,7 @@ public class TransactionDAO {
             throw new RuntimeException(e);
         }
 
+        return transaction;
     }
 
     boolean delete(int id) {
